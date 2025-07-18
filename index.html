@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2: Importación y Análisis Básico en Stata</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <!--
+    Chosen Palette: Calm Harmony
+    Application Structure Plan: Esta SPA está diseñada con una estructura vertical de una sola página, dividida en secciones que corresponden a las fases del plan de estudios PACE para la Clase 2. Una barra de navegación fija facilita la exploración. La estructura guía al estudiante a través de la recapitulación de la Clase 1, la introducción a la importación de datos y tipos de variables, y una práctica intensiva con histogramas y medidas de tendencia central utilizando datos fiscales reales (simulados). Las interacciones de copiar código y los cuestionarios refuerzan el aprendizaje práctico.
+    Visualization & Content Choices:
+     - Report Info: Comandos de Stata -> Goal: Facilitar la Práctica -> Viz/Presentation: Bloques de código con botones de "Copiar" -> Interaction: Clic para copiar -> Justification: Reduce la fricción y los errores de tipeo, permitiendo al estudiante centrarse en el propósito del comando. -> Library/Method: Vanilla JS.
+     - Report Info: Histograma y Medidas -> Goal: Visualizar Distribución -> Viz/Presentation: Bloques de código Stata paso a paso -> Interaction: Copiar y ejecutar en Stata -> Justification: Permite una comprensión gradual de cómo se construyen los gráficos y se interpretan las medidas estadísticas. -> Library/Method: Vanilla JS (presentación del código).
+     - Report Info: Cuestionarios -> Goal: Evaluar -> Viz/Presentation: Componente de cuestionario interactivo con HTML/JS -> Interaction: Selección de respuesta y retroalimentación inmediata -> Justification: La retroalimentación instantánea refuerza el aprendizaje y la autoevaluación. -> Library/Method: Vanilla JS.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Roboto Slab', serif; }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .code-block-container {
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #4A5568;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .code-block-container:hover .copy-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">Stata Clase 2</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#recapitulacion" class="nav-link text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Recap. Clase 1</a>
+                        <a href="#importacion-datos" class="nav-link text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Importar Datos</a>
+                        <a href="#tipos-variables" class="nav-link text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Tipos Variables</a>
+                        <a href="#histogramas" class="nav-link text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Histogramas</a>
+                        <a href="#tarea" class="nav-link text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Tarea</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="recapitulacion" class="mb-16 scroll-mt-24">
+            <!-- P (Propósito): Recapitular los comandos y conceptos clave de la Clase 1 para asegurar una base sólida. -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Recapitulación: Clase 1</h2>
+                <p class="mt-4 text-lg text-slate-600">¡Refresquemos la memoria antes de avanzar!</p>
+            </div>
+
+            <!-- A (Actividad): Repaso de comandos y conceptos. -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-4">Comandos Esenciales de Stata (Clase 1)</h3>
+                <p class="mb-4 text-slate-700">En la clase anterior, nos familiarizamos con la interfaz de Stata y aprendimos comandos fundamentales para empezar a interactuar con el programa. ¡Recordemos!</p>
+                <ul class="list-disc list-inside space-y-2 text-slate-600">
+                    <li><strong>`cd "ruta/a/tu/carpeta"`:</strong> Para establecer tu directorio de trabajo. ¡Crucial para organizar tus archivos!</li>
+                    <li><strong>`clear`:</strong> Para limpiar la memoria de Stata antes de cargar nuevos datos.</li>
+                    <li><strong>`sysuse nombre_dataset`:</strong> Para cargar datasets de ejemplo preinstalados en Stata.</li>
+                    <li><strong>`describe`:</strong> Para obtener un resumen de la estructura de tu dataset y sus variables.</li>
+                    <li><strong>`browse`:</strong> Para ver los datos en formato de hoja de cálculo.</li>
+                    <li><strong>`save "nombre_archivo.dta", replace`:</strong> Para guardar tus datasets en formato de Stata.</li>
+                    <li><strong>`help comando`:</strong> Tu mejor amigo para obtener ayuda sobre cualquier comando.</li>
+                </ul>
+                <p class="mt-6 text-slate-700">Si aún no has practicado estos comandos con el dataset `uslifeexp.dta` de la tarea, ¡este es el momento de hacerlo!</p>
+            </div>
+            <!-- C (Comprobación de Comprensión): Preguntas rápidas orales o un mini-quiz si es necesario. -->
+            <!-- E (Extensión/Elaboración): Conectar con la necesidad de importar datos propios. -->
+        </section>
+
+        <section id="importacion-datos" class="mb-16 scroll-mt-24">
+            <!-- P (Propósito): Enseñar a los estudiantes cómo importar sus propios datos a Stata desde Excel o CSV. -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Importación de Datos: ¡Tus Propios Números!</h2>
+                <p class="mt-4 text-lg text-slate-600">Aprende a llevar tus datos económicos y fiscales a Stata.</p>
+            </div>
+
+            <!-- A (Actividad): Explicación y comandos para importar datos. -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="mb-4 text-slate-700">En el mundo real, trabajarás con tus propios datos. Para esta clase, utilizaremos el archivo **`datos_empresas_simulados.dta`**, que ya está en formato de Stata. Esto simplifica el proceso de carga y nos permite ir directo al análisis.</p>
+
+                <h3 class="text-xl font-bold mb-3">Cargar un Archivo `.dta` (`use`)</h3>
+                <p class="mb-3 text-slate-600">El comando `use` es el más directo para cargar archivos de datos de Stata. Asegúrate de que el archivo `datos_empresas_simulados.dta` esté en tu directorio de trabajo.</p>
+                <div class="bg-stone-100 p-4 rounded-md mb-4">
+                    <p class="font-semibold text-slate-700 mb-2">Ejemplo de estructura de tu archivo `.dta`:</p>
+                    <table class="w-full text-sm text-left text-slate-500 rounded-lg overflow-hidden">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-200">
+                            <tr>
+                                <th scope="col" class="px-3 py-2">id_empresa</th>
+                                <th scope="col" class="px-3 py-2">actividad_economica</th>
+                                <th scope="col" class="px-3 py-2">ventas_gravadas</th>
+                                <th scope="col" class="px-3 py-2">ventas_no_gravadas</th>
+                                <th scope="col" class="px-3 py-2">...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <td class="px-3 py-2">0000000001</td>
+                                <td class="px-3 py-2">servicios</td>
+                                <td class="px-3 py-2">9963.52</td>
+                                <td class="px-3 py-2">11743.19</td>
+                                <td class="px-3 py-2">...</td>
+                            </tr>
+                            <tr class="bg-slate-50 border-b">
+                                <td class="px-3 py-2">0000000002</td>
+                                <td class="px-3 py-2">comercio</td>
+                                <td class="px-3 py-2">6740.13</td>
+                                <td class="px-3 py-2">1726.04</td>
+                                <td class="px-3 py-2">...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">* Asegúrate de que 'datos_empresas_simulados.dta' esté en tu directorio de trabajo
+use "datos_empresas_simulados.dta", clear
+* 'clear' limpia cualquier dato previo en memoria y permite cargar el nuevo dataset
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <p class="mb-4 text-slate-700">Aunque hoy usaremos un archivo `.dta` directamente, es bueno saber que Stata también puede importar desde Excel (`import excel`) y CSV (`import delimited`). Exploraremos esas opciones en futuras clases si tus datos lo requieren.</p>
+            </div>
+            <!-- C (Comprobación de Comprensión): Los estudiantes importan el archivo de prueba y usan 'describe' y 'browse'. -->
+            <!-- E (Extensión/Elaboración): Discutir problemas comunes de importación (encoding, delimitadores). -->
+        </section>
+
+        <section id="tipos-variables" class="mb-16 scroll-mt-24">
+            <!-- P (Propósito): Enseñar a identificar y manejar los tipos de variables en Stata. -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Identificación y Manejo de Tipos de Variables</h2>
+                <p class="mt-4 text-lg text-slate-600">Entender qué tipo de dato tienes es clave para el análisis.</p>
+            </div>
+
+            <!-- A (Actividad): Explicación de tipos de variables y cómo Stata los reconoce. -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="mb-4 text-slate-700">Una vez que tus datos están en Stata, es fundamental saber qué tipo de variable es cada columna. Stata asigna un tipo de variable (numérica, string, fecha) que determina qué operaciones puedes realizar con ella.</p>
+
+                <h3 class="text-xl font-bold mb-3">Tipos de Variables en Stata:</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-600 mb-6">
+                    <li><strong>Numéricas:</strong> Contienen solo números (ej. `ventas_gravadas`, `compras_iva_0`). Son esenciales para cálculos y análisis estadísticos.</li>
+                    <li><strong>String (Texto):</strong> Contienen caracteres alfanuméricos (ej. `actividad_economica`, `id_empresa`). No se pueden usar directamente en cálculos matemáticos.</li>
+                    <li><strong>Fechas:</strong> Stata tiene formatos especiales para manejar fechas, lo que permite realizar cálculos temporales (ej. `periodo_fiscal`).</li>
+                </ul>
+
+                <h3 class="text-xl font-bold mb-3">¿Cómo identificar los tipos de variables?</h3>
+                <p class="mb-3 text-slate-600">El comando `describe` es tu primera herramienta para esto. Presta atención a la columna "Storage type".</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">describe</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <p class="mb-4 text-slate-700">Si una variable numérica aparece como 'string' (ej. `strL` o `str#`), es probable que contenga caracteres no numéricos o espacios. Podrías necesitar el comando `destring` para convertirla a numérica.</p>
+            </div>
+            <!-- C (Comprobación de Comprensión): Los estudiantes identifican los tipos de variables de su dataset importado. -->
+            <!-- E (Extensión/Elaboración): Discutir la importancia de los tipos de variables para el análisis fiscal. -->
+        </section>
+
+        <section id="histogramas" class="mb-16 scroll-mt-24">
+            <!-- P (Propósito): Guiar a los estudiantes en la creación de histogramas y la superposición de medidas estadísticas paso a paso. -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Histogramas y Medidas de Tendencia Central</h2>
+                <p class="mt-4 text-lg text-slate-600">Visualiza la distribución de tus datos fiscales.</p>
+            </div>
+
+            <!-- A (Actividad): Práctica guiada con el do-file paso a paso. -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="mb-4 text-slate-700">Ahora que tenemos nuestros datos importados, vamos a usar `ventas_gravadas` para crear histogramas y entender su distribución. Recuerda que un histograma nos muestra cómo se distribuyen los valores de una variable, y las medidas de tendencia central nos dan puntos de referencia clave en esa distribución.</p>
+
+                <h3 class="text-xl font-bold mb-3">Paso 1: Obtener Estadísticas Descriptivas</h3>
+                <p class="mb-3 text-slate-600">Antes de graficar, usemos `summarize, detail` para obtener la media, mediana, cuartiles, mínimo y máximo de `ventas_gravadas`. Anota estos valores, los usaremos para superponerlos en el histograma.</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">summarize ventas_gravadas, detail
+* Observa la salida para identificar:
+* Mean (Media)
+* p50 (Mediana)
+* Min (Mínimo)
+* Max (Máximo)
+* p25 (Primer Cuartil)
+* p75 (Tercer Cuartil)
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Paso 2: Histograma Básico de Ventas Gravadas</h3>
+                <p class="mb-3 text-slate-600">Este es el punto de partida. Observa la forma de la distribución: ¿es simétrica, asimétrica? ¿Hay valores que se alejan mucho del centro?</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">histogram ventas_gravadas, percent title("Distribución de Ventas Gravadas") xtitle("Monto de Ventas Gravadas") ytitle("Porcentaje")
+* 'percent' muestra el porcentaje de observaciones en cada barra.
+* 'title', 'xtitle', 'ytitle' son opciones para personalizar el gráfico.
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Paso 3: Histograma con la Media</h3>
+                <p class="mb-3 text-slate-600">Ahora, superpondremos una línea vertical en la media. Esto nos ayuda a ver dónde está el 'punto de equilibrio' de las ventas gravadas.</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">* Primero, guarda la media en una macro local (reemplaza con el valor de tu 'summarize')
+local mean_vg = r(mean)
+* O si lo haces manualmente: local mean_vg = VALOR_DE_LA_MEDIA_DE_SUMMARIZE
+
+graph twoway (histogram ventas_gravadas, percent bin(15) color(gs12) fcolor(gs14)) ///
+             || (scatteri 0 `mean_vg' 100 `mean_vg', lcolor(red) lwidth(medium) lpattern(dash)) ///
+             if ventas_gravadas < . , ///
+             title("Distribución de Ventas Gravadas con Media") ///
+             xtitle("Monto de Ventas Gravadas") ytitle("Porcentaje") ///
+             legend(label(1 "Histograma") label(2 "Media") pos(11) col(1))
+* 'scatteri' dibuja una línea vertical. '0' y '100' son los límites Y, `mean_vg` es la posición X.
+* 'lcolor', 'lwidth', 'lpattern' personalizan la línea.
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Paso 4: Histograma con la Mediana</h3>
+                <p class="mb-3 text-slate-600">Añadamos la mediana. Recuerda que la mediana divide los datos en dos mitades. Compara su posición con la media.</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">* Guarda la mediana en una macro local (reemplaza con el valor de tu 'summarize')
+local median_vg = r(p50)
+* O si lo haces manualmente: local median_vg = VALOR_DE_LA_MEDIANA_DE_SUMMARIZE
+
+graph twoway (histogram ventas_gravadas, percent bin(15) color(gs12) fcolor(gs14)) ///
+             || (scatteri 0 `mean_vg' 100 `mean_vg', lcolor(red) lwidth(medium) lpattern(dash)) ///
+             || (scatteri 0 `median_vg' 100 `median_vg', lcolor(blue) lwidth(medium) lpattern(dot)) ///
+             if ventas_gravadas < . , ///
+             title("Distribución de Ventas Gravadas con Media y Mediana") ///
+             xtitle("Monto de Ventas Gravadas") ytitle("Porcentaje") ///
+             legend(label(1 "Histograma") label(2 "Media") label(3 "Mediana") pos(11) col(1))
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Paso 5: Histograma con el Rango (Mínimo y Máximo)</h3>
+                <p class="mb-3 text-slate-600">El rango nos muestra la extensión total de los datos. Graficaremos líneas en los valores mínimo y máximo.</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">* Guarda el mínimo y máximo en macros locales
+local min_vg = r(min)
+local max_vg = r(max)
+
+graph twoway (histogram ventas_gravadas, percent bin(15) color(gs12) fcolor(gs14)) ///
+             || (scatteri 0 `mean_vg' 100 `mean_vg', lcolor(red) lwidth(medium) lpattern(dash)) ///
+             || (scatteri 0 `median_vg' 100 `median_vg', lcolor(blue) lwidth(medium) lpattern(dot)) ///
+             || (scatteri 0 `min_vg' 100 `min_vg', lcolor(green) lwidth(thin) lpattern(solid)) ///
+             || (scatteri 0 `max_vg' 100 `max_vg', lcolor(green) lwidth(thin) lpattern(solid)) ///
+             if ventas_gravadas < . , ///
+             title("Distribución de Ventas Gravadas con Media, Mediana y Rango") ///
+             xtitle("Monto de Ventas Gravadas") ytitle("Porcentaje") ///
+             legend(label(1 "Histograma") label(2 "Media") label(3 "Mediana") label(4 "Mínimo") label(5 "Máximo") pos(11) col(1))
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Paso 6: Histograma con el Rango Intercuartílico (Q1 y Q3)</h3>
+                <p class="mb-3 text-slate-600">Finalmente, añadimos las líneas para el primer y tercer cuartil. El espacio entre estas líneas representa el 50% central de tus datos.</p>
+                <div class="code-block-container mb-6">
+                    <pre class="bg-slate-800 text-white p-4 rounded-md overflow-x-auto"><code class="language-stata">* Guarda el primer y tercer cuartil en macros locales
+local q1_vg = r(p25)
+local q3_vg = r(p75)
+
+graph twoway (histogram ventas_gravadas, percent bin(15) color(gs12) fcolor(gs14)) ///
+             || (scatteri 0 `mean_vg' 100 `mean_vg', lcolor(red) lwidth(medium) lpattern(dash)) ///
+             || (scatteri 0 `median_vg' 100 `median_vg', lcolor(blue) lwidth(medium) lpattern(dot)) ///
+             || (scatteri 0 `min_vg' 100 `min_vg', lcolor(green) lwidth(thin) lpattern(solid)) ///
+             || (scatteri 0 `max_vg' 100 `max_vg', lcolor(green) lwidth(thin) lpattern(solid)) ///
+             || (scatteri 0 `q1_vg' 100 `q1_vg', lcolor(purple) lwidth(thin) lpattern(longdash)) ///
+             || (scatteri 0 `q3_vg' 100 `q3_vg', lcolor(purple) lwidth(thin) lpattern(longdash)) ///
+             if ventas_gravadas < . , ///
+             title("Distribución de Ventas Gravadas con Media, Mediana y Cuartiles") ///
+             xtitle("Monto de Ventas Gravadas") ytitle("Porcentaje") ///
+             legend(label(1 "Histograma") label(2 "Media") label(3 "Mediana") label(4 "Mínimo") label(5 "Máximo") label(6 "Q1") label(7 "Q3") pos(11) col(1))
+</code></pre>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3">Interpretación de Resultados</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-600">
+                    <li><strong>Variable Aleatoria:</strong> Las 'ventas_gravadas' son una variable aleatoria porque sus valores varían entre las empresas. Nuestro objetivo es entender esa variación.</li>
+                    <li><strong>Distribución de una Variable:</strong> El histograma te muestra la 'forma' de la distribución. ¿Dónde se concentran la mayoría de las ventas? ¿Hay empresas con ventas muy bajas o muy altas?</li>
+                    <li><strong>Atípicos (Outliers):</strong> Observa los extremos del histograma. Si hay barras muy pequeñas o muy separadas, podrían indicar valores atípicos, es decir, empresas con ventas excepcionalmente altas o bajas que se desvían del patrón general. Estos son importantes de identificar en análisis fiscal.</li>
+                    <li><strong>Media vs. Mediana:</strong> Compara la línea roja (media) y azul (mediana). Si están cerca, la distribución es más simétrica. Si la media es mayor que la mediana (la cola derecha es más larga), indica que hay algunas empresas con ventas muy altas que 'jalan' el promedio hacia arriba.</li>
+                    <li><strong>Rango y Rango Intercuartílico:</strong> El rango te da la extensión total. El rango intercuartílico (entre Q1 y Q3) te muestra dónde se concentra el 50% central de las ventas, dándote una idea más robusta de la dispersión sin ser tan sensible a los atípicos como el rango completo.</li>
+                </ul>
+            </div>
+            <!-- C (Comprobación de Comprensión): Los estudiantes crean los gráficos y discuten su interpretación. -->
+            <!-- E (Extensión/Elaboración): Discutir cómo la forma de la distribución afecta la elección de medidas de resumen. -->
+        </section>
+        
+        <section id="tarea" class="scroll-mt-24">
+             <!-- P (Propósito): Consolidar el aprendizaje y establecer una tarea que refuerce la autonomía y la exploración. -->
+             <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Tarea y Próximos Pasos</h2>
+                <p class="mt-4 text-lg text-slate-600">Consolida lo que aprendiste y prepárate para la siguiente clase.</p>
+            </div>
+
+            <!-- A (Actividad - Pregunta de Práctica): Ejercicio de práctica en clase. -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4">Práctica en Clase (30 minutos)</h3>
+                    <p class="mb-4 text-slate-600">Usa los últimos minutos de la clase para realizar este ejercicio completo en tu Stata.</p>
+                    <ul id="practice-checklist" class="space-y-3">
+                        <li class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3"><span class="text-slate-700">Asegúrate de que el archivo `datos_empresas_simulados.dta` esté en tu directorio de trabajo.</span></li>
+                        <li class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3"><span class="text-slate-700">Carga los datos usando `use`.</span></li>
+                        <li class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3"><span class="text-slate-700">Usa `describe` para verificar los tipos de variables.</span></li>
+                        <li class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3"><span class="text-slate-700">Genera el histograma de `ventas_no_gravadas` y superpón la media y la mediana.</span></li>
+                        <li class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3"><span class="text-slate-700">Interpreta la distribución de `ventas_no_gravadas` basándote en el histograma y las medidas de tendencia central.</span></li>
+                    </ul>
+                </div>
+                <!-- A (Actividad - Tarea): Tarea para la próxima clase. -->
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4">Tarea para la Próxima Clase (20 minutos)</h3>
+                     <ul id="homework-checklist" class="space-y-3">
+                        <li class="flex items-start"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3 mt-1"><span class="text-slate-700"><strong>Práctica de Comandos:</strong> Repite el proceso de carga y generación de histogramas con medidas de tendencia central para la variable `compras_gravadas`.</span></li>
+                        <li class="flex items-start"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3 mt-1"><span class="text-slate-700"><strong>Análisis de Distribución:</strong> Para `compras_gravadas`, escribe una breve descripción (3-5 líneas) de su distribución, mencionando si es simétrica/asimétrica y si observas posibles atípicos.</span></li>
+                        <li class="flex items-start"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 mr-3 mt-1"><span class="text-slate-700"><strong>Lectura Recomendada:</strong> Revisa el capítulo sobre "Estadísticas Descriptivas y Gráficos" en tu manual de Stata o en los materiales complementarios que te proporcionaré en Google Classroom.</span></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- C (Comprobación de Comprensión): Observación de la resolución de la pregunta de práctica en clase. La tarea será revisada al inicio de la próxima sesión. -->
+            <!-- E (Extensión/Elaboración): Fomentar el autoaprendizaje y la exploración de la función `help`. -->
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16">
+        <div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 Curso de Stata Básico. ¡Sigue practicando!</p>
+        </div>
+    </footer>
+
+    <div id="copy-feedback" class="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+        ¡Copiado!
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const stataWindows = document.querySelectorAll('.stata-window');
+    const infoContents = document.querySelectorAll('.stata-info-content');
+    const infoDefault = document.getElementById('info-default');
+    let activeWindow = null;
+
+    stataWindows.forEach(windowEl => {
+        windowEl.addEventListener('click', () => {
+            const targetId = windowEl.dataset.target;
+            const targetContent = document.getElementById(targetId);
+
+            infoContents.forEach(content => content.classList.add('hidden'));
+
+            if (activeWindow === windowEl) {
+                infoDefault.classList.remove('hidden');
+                activeWindow.classList.remove('bg-teal-600', 'text-white');
+                activeWindow.classList.add('bg-slate-100', 'text-slate-500');
+                activeWindow = null;
+            } else {
+                if (activeWindow) {
+                    activeWindow.classList.remove('bg-teal-600', 'text-white');
+                    activeWindow.classList.add('bg-slate-100', 'text-slate-500');
+                }
+                targetContent.classList.remove('hidden');
+                windowEl.classList.add('bg-teal-600', 'text-white');
+                windowEl.classList.remove('bg-slate-100', 'text-slate-500');
+                activeWindow = windowEl;
+            }
+        });
+    });
+
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    const copyFeedback = document.getElementById('copy-feedback');
+    copyButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const codeBlock = e.target.previousElementSibling.querySelector('code');
+            const codeText = codeBlock.innerText;
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                copyFeedback.classList.remove('opacity-0');
+                setTimeout(() => {
+                    copyFeedback.classList.add('opacity-0');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    const quizData = [
+        {
+            question: "¿En qué ventana de Stata escribes los comandos que quieres ejecutar?",
+            options: ["Ventana Results", "Ventana Variables", "Ventana Command", "Ventana Properties"],
+            correct: 2
+        },
+        {
+            question: "Si Stata te muestra un error, ¿dónde buscarías el comando que lo causó para corregirlo?",
+            options: ["Ventana Variables", "Ventana Review", "Ventana Properties", "Ventana Command"],
+            correct: 1
+        },
+        {
+            question: "¿Para qué es fundamental establecer un 'directorio de trabajo'?",
+            options: ["Para aumentar la velocidad de Stata", "Para organizar tu proyecto y archivos", "Para cambiar el color de la interfaz", "Para cargar la ayuda más rápido"],
+            correct: 1
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    const quizContainer = document.getElementById('quiz-container');
+
+    function renderQuiz() {
+        const quiz = quizData[currentQuestionIndex];
+        let optionsHtml = '';
+        quiz.options.forEach((option, index) => {
+            optionsHtml += `<button data-index="${index}" class="quiz-option w-full text-left bg-white p-3 rounded-md hover:bg-stone-200 transition-colors duration-200">${option}</button>`;
+        });
+
+        quizContainer.innerHTML = `
+            <p class="font-semibold mb-4">${currentQuestionIndex + 1}. ${quiz.question}</p>
+            <div class="space-y-2">${optionsHtml}</div>
+            <div id="quiz-feedback" class="mt-4 text-sm font-semibold"></div>
+            <button id="next-quiz-btn" class="hidden mt-4 bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">Siguiente</button>
+        `;
+
+        document.querySelectorAll('.quiz-option').forEach(optionBtn => {
+            optionBtn.addEventListener('click', handleOptionClick);
+        });
+        document.getElementById('next-quiz-btn').addEventListener('click', handleNextClick);
+    }
+
+    function handleOptionClick(e) {
+        const selectedIndex = parseInt(e.target.dataset.index);
+        const correctIndex = quizData[currentQuestionIndex].correct;
+        const feedbackEl = document.getElementById('quiz-feedback');
+
+        document.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.remove('hover:bg-stone-200');
+        });
+
+        if (selectedIndex === correctIndex) {
+            e.target.classList.add('bg-green-200');
+            feedbackEl.textContent = '¡Correcto!';
+            feedbackEl.className = 'mt-4 text-sm font-semibold text-green-700';
+        } else {
+            e.target.classList.add('bg-red-200');
+            document.querySelector(`.quiz-option[data-index="${correctIndex}"]`).classList.add('bg-green-200');
+            feedbackEl.textContent = 'No exactamente. La respuesta correcta está resaltada en verde.';
+            feedbackEl.className = 'mt-4 text-sm font-semibold text-red-700';
+        }
+
+        if (currentQuestionIndex < quizData.length - 1) {
+            document.getElementById('next-quiz-btn').classList.remove('hidden');
+        } else {
+             feedbackEl.textContent += ' ¡Has completado el refuerzo!';
+        }
+    }
+
+    function handleNextClick() {
+        currentQuestionIndex++;
+        renderQuiz();
+    }
+
+    renderQuiz();
+
+    const checklists = document.querySelectorAll('#practice-checklist, #homework-checklist');
+    checklists.forEach(list => {
+        list.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                e.target.nextElementSibling.classList.toggle('line-through', e.target.checked);
+                e.target.nextElementSibling.classList.toggle('text-slate-400', e.target.checked);
+            }
+        });
+    });
+
+});
+</script>
+</body>
+</html>
